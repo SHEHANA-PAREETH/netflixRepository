@@ -187,6 +187,15 @@ main { min-height: 70vh; }
 .modal-loading { border-radius: 0; }
 @keyframes rise { from { transform: translateY(40px); opacity: 0; } }
 
+/* ---------- confirm dialog ---------- */
+.confirm-backdrop { z-index: 150; place-items: center; padding: 20px; }
+.confirm { width: min(100%, 400px); background: var(--bg-2); border: 1px solid var(--line); border-radius: 16px; padding: 24px; display: grid; gap: 10px; box-shadow: 0 24px 70px rgba(0, 0, 0, 0.7); animation: rise 0.22s ease-out; }
+.confirm h2 { font-size: 1.25rem; }
+.confirm p { color: var(--muted); font-size: 0.95rem; }
+.confirm-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
+.btn-danger { background: var(--red); color: #fff; }
+.btn-danger:hover { background: var(--red-2); }
+
 /* ---------- footer, toasts ---------- */
 .footer { padding: 36px var(--gutter) 48px; color: var(--muted); font-size: 0.8rem; display: grid; gap: 6px; border-top: 1px solid var(--line); margin-top: 20px; }
 .toasts { position: fixed; z-index: 300; left: 50%; bottom: max(20px, env(safe-area-inset-bottom)); transform: translateX(-50%); display: grid; gap: 8px; width: min(92vw, 380px); pointer-events: none; }

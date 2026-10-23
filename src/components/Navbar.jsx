@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, NavLink, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { useLibrary } from '../context/Library'
 import { useToast } from '../context/Toast'
@@ -78,13 +79,20 @@ export default function Navbar() {
   const onSearchKey = (event) => {
     if (event.key === 'Escape') { setText(''); setSearchOpen(false); if (onSearchPage) navigate('/') }
   }
-  const reset = () => {
-    if (window.confirm('Remove everything from My List and Recently viewed?')) {
-      clearAll()
-      setMenuOpen(false)
-      notify('Your list and history were cleared')
-    }
+  const [confirming, setConfirming] = useState(false)
+  const reset = () => { setMenuOpen(false); setConfirming(true) }
+  const confirmReset = () => {
+    clearAll()
+    setConfirming(false)
+    notify('Your list and history were cleared')
   }
+
+  useEffect(() => {
+    if (!confirming) return undefined
+    const onKey = (event) => { if (event.key === 'Escape') setConfirming(false) }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [confirming])
 
   return (
     <header className={`navbar ${solid ? 'solid' : ''} ${searchOpen ? 'searching' : ''}`}>
@@ -132,6 +140,20 @@ export default function Navbar() {
           </div>
         </div>
       </div>
+
+      {confirming && createPortal(
+        <div className="modal-backdrop confirm-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setConfirming(false) }}>
+          <div className="confirm" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+            <h2 id="confirm-title">Clear your list?</h2>
+            <p id="confirm-text">This removes everything from My List and Recently viewed on this device. It can't be undone.</p>
+            <div className="confirm-actions">
+              <button type="button" className="btn btn-ghost" onClick={() => setConfirming(false)} autoFocus>Cancel</button>
+              <button type="button" className="btn btn-danger" onClick={confirmReset}>Clear everything</button>
+            </div>
+          </div>
+        </div>,
+        document.body,
+      )}
     </header>
   )
 }
